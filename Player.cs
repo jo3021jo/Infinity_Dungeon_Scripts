@@ -8,11 +8,9 @@ using System;
 
 public class Player : MonoBehaviour
 {
-    public Enemy enemy;
-
     public TextMeshProUGUI HpText;
     [SerializeField] private SpriteRenderer playerImage;
-
+    [SerializeField] private float AttackOffset = 2.0f;
     public int playerHP { get; private set; }
     private int currentHP;
     public int playerPower { get; private set; }
@@ -32,15 +30,15 @@ public class Player : MonoBehaviour
     void SetUp()
     {
         currentHP = playerHP;
-        HpText.text = $"Hp : {currentHP}/{playerHP}";
+        HPUpdate();
     }
 
-    public void PlayerAction(Action onHit, Action onFinished)
+    public void PlayerAction(Vector3 targetPos, Action onHit, Action onFinished)
     {
         Vector3 startPos = transform.position;
         Sequence seq = DOTween.Sequence();
 
-        seq.Append(transform.DOMove(enemy.transform.position - new Vector3(2, 0, 0), 1f).SetEase(Ease.OutExpo));
+        seq.Append(transform.DOMove(targetPos - new Vector3(AttackOffset, 0, 0), 1f).SetEase(Ease.OutExpo));
         seq.AppendCallback(() =>
         {
             onHit?.Invoke();
@@ -55,6 +53,12 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        currentHP -= damage;
+        HPUpdate();
+    }
 
+    void HPUpdate()
+    {
+        HpText.text = $"Hp : {currentHP}/{playerHP}";
     }
 }

@@ -20,40 +20,14 @@ public class BattleManager : MonoBehaviour
 
 void StartSetUp()
     {
-        if (player.playerSPD > enemy.EnemySPD)
+        if (player.playerSPD > enemy.enemySPD)
         {
             battleState = BattleState.PlayerTurn;
-        }
-        else if (player.playerSPD == enemy.EnemySPD)
-        {
-            battleState = BattleState.EnemyTurn;
         }
         else
         {
             battleState = BattleState.EnemyTurn;
-        }
-    }
-
-    public void OnAttack_Button()
-    {
-        switch (battleState)
-        {
-            case BattleState.PlayerTurn:
-                {
-                    player.PlayerAction(
-                        onHit: () =>
-                        {
-                            OnDamage(player.playerPower);
-                        },
-                        onFinished: () =>
-                        {
-                            battleState = BattleState.EnemyTurn;
-                        });
-                }break;
-            default:
-                {
-                    Debug.Log("아직 턴이 아닙니다.");   // 나중에 UI 추가 예정
-                }break;
+            EnemyAttack();
         }
     }
 
@@ -68,9 +42,34 @@ void StartSetUp()
                 break;
             case BattleState.EnemyTurn:
                 {
-
+                    player.TakeDamage(damage);
                 }
                 break;
+        }
+    }
+
+    public void OnAttack_Button()
+    {
+        switch (battleState)
+        {
+            case BattleState.PlayerTurn:
+                {
+                    player.PlayerAction(
+                        targetPos: enemy.transform.position,
+                        onHit: () =>
+                        {
+                            OnDamage(player.playerPower);
+                        },
+                        onFinished: () =>
+                        {
+                            battleState = BattleState.EnemyTurn;
+                            EnemyAttack();
+                        });
+                }break;
+            default:
+                {
+                    Debug.Log("아직 턴이 아닙니다.");   // 나중에 UI 추가 예정
+                }break;
         }
     }
 
@@ -80,7 +79,16 @@ void StartSetUp()
         {
             case BattleState.EnemyTurn:
                 {
-
+                    enemy.EnemyAction(
+                        targetPos: player.transform.position,
+                        onHit: () =>
+                        {
+                            OnDamage(enemy.enemyPower);
+                        },
+                        onFinished: () =>
+                        {
+                            battleState = BattleState.PlayerTurn;
+                        });
                 }
                 break;
         }
