@@ -6,7 +6,7 @@ public class BattleManager : MonoBehaviour
 {
     public enum BattleState
     {
-        Start, PlayerTurn, EnemyTurn, Won, Lost
+        Start, PlayerTurn, EnemyTurn, Won, Lost, Busy
     }
     public BattleState battleState;
 
@@ -33,19 +33,12 @@ void StartSetUp()
 
     void OnDamage(int damage)
     {
-        switch (battleState)
-        {
-            case BattleState.PlayerTurn:
-                {
-                    enemy.TakeDamage(damage);
-                }
-                break;
-            case BattleState.EnemyTurn:
-                {
-                    player.TakeDamage(damage);
-                }
-                break;
-        }
+        enemy.TakeDamage(damage);
+    }
+
+    void EonDamage(int damage)
+    {
+        player.TakeDamage(damage);
     }
 
     public void OnAttack_Button()
@@ -54,6 +47,8 @@ void StartSetUp()
         {
             case BattleState.PlayerTurn:
                 {
+                    battleState = BattleState.Busy;
+
                     player.PlayerAction(
                         targetPos: enemy.transform.position,
                         onHit: () =>
@@ -83,7 +78,7 @@ void StartSetUp()
                         targetPos: player.transform.position,
                         onHit: () =>
                         {
-                            OnDamage(enemy.enemyPower);
+                            EonDamage(enemy.enemyPower);
                         },
                         onFinished: () =>
                         {
