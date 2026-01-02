@@ -17,6 +17,8 @@ public class MoveArrow : MonoBehaviour
     {
         Sequence seq = DOTween.Sequence();
 
-        seq.Append(player.transform.DOMove())
+        seq.Append(player.transform
+            .DOMove(GameObject.Find("South_Button").transform.position, 1f)
+            .SetEase(Ease.OutExpo));
     }
 }
